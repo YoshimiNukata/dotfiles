@@ -1,0 +1,102 @@
+[[plugins]]
+repo =  'Shougo/neomru.vim'
+[[plugins]]
+repo =  "Shougo/vimproc" 
+build = 'make'
+
+[[plugins]]
+repo =  'Shougo/vimfiler'
+
+[[plugins]]
+repo =  'Shougo/unite.vim'
+
+[[plugins]]
+repo =  'Shougo/denite.nvim'
+hook_post_source = '''
+call denite#custom#option('default', 'direction', 'top')
+call denite#custom#option('default', {'mode': 'normal'})
+call denite#custom#var('grep', 'command', ['ag'])
+call denite#custom#var('grep', 'default_opts',
+\ ['-i', '--vimgrep'])
+call denite#custom#var('grep', 'recursive_opts', [])
+call denite#custom#var('grep', 'pattern_opt', [])
+call denite#custom#var('grep', 'separator', ['--'])
+call denite#custom#var('grep', 'final_opts', [])
+'''
+
+[[plugins]]
+repo =  'romanvbabenko/rails.vim'
+
+[[plugins]]
+repo =  'basyura/unite-rails'
+
+[[plugins]]
+repo = "airblade/vim-gitgutter"
+
+[[plugins]]
+repo =  'slim-template/vim-slim'
+
+[[plugins]]
+repo = 'billyvg/tigris.nvim'
+on_ft = ['javascript', 'javascript.jsx']
+hook_post_update = '''
+  let g:dein#plugin.build = './install.sh'
+'''
+
+[[plugins]]
+repo =  'nanotech/jellybeans.vim'
+
+#  インデントに色を付けて見やすくする
+[[plugins]]
+repo =  'nathanaelkane/vim-indent-guides'
+
+#  gitの操作するため
+[[plugins]]
+repo =  'tpope/vim-fugitive'
+
+#  Ruby向けにendを自動挿入してくれる
+[[plugins]]
+repo =  'tpope/vim-endwise'
+
+[[plugins]]
+repo =  'scrooloose/nerdtree'
+[[plugins]]
+repo =  'tacroe/unite-mark'
+[[plugins]]
+repo = 'Shougo/neoyank.vim'
+[[plugins]]
+repo = 'kshenoy/vim-signature'
+[[plugins]]
+repo = 'hashivim/vim-terraform.git'
+#[[plugins]]
+#repo =  'visualmark.vim'
+#[[plugins]]
+#repo =  'taichouchou2/vim-rails'
+
+
+# 非同期コードチェック
+#[[plugins]]
+repo = 'w0rp/ale'
+
+[[plugins]]
+repo = 'roxma/nvim-yarp'
+
+[[plugins]]
+repo = 'roxma/vim-hug-neovim-rpc'
+
+# 文字列補完
+[[plugins]]
+repo = 'Shougo/deoplete.nvim'
+hook_add = '''
+  let g:deoplete#enable_at_startup = 1
+  inoremap <expr><Tab> pumvisible() ? "\<DOWN>" : "\<Tab>"
+  inoremap <expr><S-Tab> pumvisible() ? "\<UP>" : "\<S-Tab>"
+'''
+
+# {}、()などの、対応する文字を自働入力(消えた時も自動調整)
+[[plugins]]
+repo = 'jiangmiao/auto-pairs'
+
+# 閉じタグの自動入力
+[[plugins]]
+repo = 'alvan/vim-closetag'
