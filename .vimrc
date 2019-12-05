@@ -3,18 +3,43 @@ nnoremap : ;
 set nocompatible
 set number
 set encoding=utf-8
+set helplang=ja,en
 set hlsearch
+set cursorline
 set noswapfile
 set list
+"ターミナルを画面下部に出す"
+set splitbelow
+"デフォルトのターミナルサイズ変更"
+set termwinsize=20x0
+"ターミナルが開かれていないなら開く"
+function! TermOpen()
+    if empty(term_list())
+        execute "terminal"
+    else
+        call win_gotoid(win_findbuf(term_list()[0])[0])
+    endif
+endfunction
+"exitterm呼び出し
+augroup term-exit
+  autocmd!
+  autocmd BufEnter * call ExitTerm()
+augroup END
+"terminalを終了する関数
+function! ExitTerm()
+    if !empty(term_list())
+        let term_tabnr = Bufnr2tabnr(term_list()[0])
+        let num_win_in_tabnr = tabpagewinnr(term_tabnr[0], '$')
+        if num_win_in_tabnr == 1
+            call term_sendkeys(term_list()[0], "exit\<CR>")
+        endif
+    endif
+endfunction
+noremap <silent> <space>term :call TermOpen()<CR>
 set listchars=tab:>.,trail:_,eol:↲,extends:>,precedes:<,nbsp:%
 " 想定される改行コードの指定する
 "set fileformats=unix,dos,mac
 set backspace=indent,eol,start
-filetype off            " for NeoBundle
-if has('vim_starting')
-        set rtp+=$HOME/.vim/bundle/neobundle.vim/
-endif
-
 " vimrc に以下のように追記
 
 " プラグインが実際にインストールされるディレクトリ
@@ -55,24 +80,34 @@ endif
 if dein#check_install(['vimproc'])
   call dein#install(['vimproc'])
 endif
-"if has('python3')
-"  call dein#add('Shougo/denite.nvim')
-"endif
-" call dein#add('Shougo/unite.vim')
+
 " もし、未インストールものものがあったらインストール
 if dein#check_install()
   call dein#install()
 endif
 
- 
+
 filetype plugin indent on       " restore filetype
 set tabstop=2
-set shiftwidth=2 
-set expandtab 
+set shiftwidth=2
+set expandtab
 
-"colorscheme elflord 
-"colorscheme molokai 
-colorscheme jellybeans 
+" If you have vim >=8.0 or Neovim >= 0.1.5
+if (has("termguicolors"))
+ set termguicolors
+endif
+
+colorscheme iceberg
+
+" テキスト背景色
+au ColorScheme * hi Normal ctermbg=none
+" 括弧対応
+au ColorScheme * hi MatchParen cterm=bold ctermfg=214 ctermbg=black
+" スペルチェック
+au Colorscheme * hi SpellBad ctermfg=23 cterm=none ctermbg=none
+
+set background=dark
+
 syntax on
 "インデントの表示設定
 let g:indent_guides_enable_on_vim_startup=1
@@ -86,6 +121,10 @@ let g:indent_guides_auto_colors = 0
 let g:indent_guides_color_change_percent = 30
 let g:indent_guides_guide_size = 1
 "ここまでインデントの表示設定
+
+let g:tigris#enabled = 1
+let g:tigris#on_the_fly_enabled = 1
+let g:tigris#delay = 300
 
 "if dein#tap('unite.vim')
   " unite_setting
@@ -121,7 +160,7 @@ let g:indent_guides_guide_size = 1
     hi CursorLine guifg=#E19972
     " ノーマルモードで起動
     call denite#custom#option('default', {'mode': 'normal'})
-    " jjでノーマルモードに 
+    " jjでノーマルモードに
     call denite#custom#map('insert', 'jj', '<denite:enter_mode:normal>', 'noremap')
     " grep検索
     nnoremap <silent> ,g  :<C-u>Denite grep -buffer-name=search-buffer-denite<CR>
@@ -133,8 +172,8 @@ let g:indent_guides_guide_size = 1
     " grep検索
     nnoremap <silent> ,g  :<C-u>Unite grep:. -buffer-name=search-buffer<CR>
     " カーソル位置の単語をgrep検索
-    nnoremap <silent> ,cg :<C-u>Unite grep:. -buffer-name=search-buffer<CR><C-R><C-W><CR> 
-     " grep検索結果の再呼出
+    nnoremap <silent> ,cg :<C-u>Unite grep:. -buffer-name=search-buffer<CR><C-R><C-W><CR>
+    " grep検索結果の再呼出
     nnoremap <silent> ,gg  :<C-u>UniteResume search-buffer<CR>
   endif
   " ディレクトリを指定してgrep検索
@@ -146,7 +185,6 @@ let g:indent_guides_guide_size = 1
     let g:unite_source_grep_recursive_opt = ''
   endif
   nnoremap <silent> ,e  :<C-u>Unite file_rec/async:!<CR>
-"endif
 
 nnoremap s <Nop>
 nnoremap sj <C-w>j
@@ -157,7 +195,6 @@ nnoremap sJ <C-w>J
 nnoremap sK <C-w>K
 nnoremap sL <C-w>L
 nnoremap sH <C-w>H
-"nnoremap sn gt
 "次のウインドウに移動
 nnoremap sn <C-w>w
 "nnoremap sp gT
@@ -176,23 +213,7 @@ nnoremap sq :<C-u>q<CR>
 nnoremap sQ :<C-u>bd<CR>
 nnoremap sb :<C-u>Unite buffer_tab -buffer-name=file<CR>
 nnoremap sB :<C-u>Unite buffer -buffer-name=file<CR>
-"call submode#enter_with('bufmove', 'n', '', 's>', '<C-w>>')
-"call submode#enter_with('bufmove', 'n', '', 's<', '<C-w><')
-"call submode#enter_with('bufmove', 'n', '', 's+', '<C-w>+')
-"call submode#enter_with('bufmove', 'n', '', 's-', '<C-w>-')
-"call submode#map('bufmove', 'n', '', '>', '<C-w>>')
-"call submode#map('bufmove', 'n', '', '<', '<C-w><')
-"call submode#map('bufmove', 'n', '', '+', '<C-w>+')
-"call submode#map('bufmove', 'n', '', '-', '<C-w>-')
-"2
-"3
-"4
-"5
-"6
-"7
-"8
-"9
-"10
+
 call denite#custom#source('file_rec', 'matchers', ['matcher_fuzzy','matcher_ignore_globs'])
 call denite#custom#filter('matcher_ignore_globs', 'ignore_globs',
       \ [
@@ -267,59 +288,13 @@ nnoremap <silent> [Tag]p :tabprevious<CR>
 " jjで挿入モードから抜ける設定
 inoremap <silent> jj <ESC>
 
-let g:neocomplete#enable_at_startup = 0
-let g:neocomplete#enable_ignore_case = 1
-let g:neocomplete#enable_smart_case = 1
-let g:neocomplete#auto_completion_start_length = 3
-let g:neocomplete#manual_completion_start_length = 0
-let g:neocomplete#sources#syntax#min_keyword_length = 3
-let g:neocomplete#min_keyword_length = 2
-if !exists('g:neocomplete#keyword_patterns')
-  let g:neocomplete#keyword_patterns = {}
-endif
-let g:neocomplete#keyword_patterns._ = '\h\w*'
-"inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
-"inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<S-TAB>"
-"コード補完用インストールコマンド
-"Rsenceインストール
-"wget http://cx4a.org/pub/rsense/rsense-0.3.tar.bz2
-"bzip2 -dc rsense-0.3.tar.bz2 | tar xvf -
-"sudo cp -r rsense-0.3 /usr/local/lib
-"sudo chmod +x /usr/local/lib/rsense-0.3/bin/rsense
-"cd /usr/local/lib/rsense-0.3
-"ruby etc/config.rb > ~/.rsense
-"let g:rsenseHome = '/usr/local/lib/rsense-0.3'
-"let g:rsenseUseOmniFunc = 1
-"let g:acp_enableAtStartup = 0
-"let g:neocomplete#enable_at_startup = 1
-"let g:neocomplete#enable_smart_case = 1
-"if !exists('g:neocomplete#force_omni_input_patterns')
-"  let g:neocomplete#force_omni_input_patterns = {}
-"endif
-"let g:neocomplete#force_omni_input_patterns.ruby = '[^.*\t]\.\w*\|\h\w*::'
-"------------------------------------
-" neosnippet
-"------------------------------------
-" neosnippet "{{{
- 
-" snippetを保存するディレクトリを設定してください
-" let s:default_snippet = neobundle#get_neobundle_dir() .
-" '/neosnippet/autoload/neosnippet/snippets' " 本体に入っているsnippet
-" let s:my_snippet = '~/snippet' " 自分のsnippet
-" let g:neosnippet#snippets_directory = s:my_snippet
-"let g:neosnippet#snippets_directory = s:default_snippet . ',' ." s:my_snippet
-"imap <silent><C-k>                <Plug>(neosnippet_expand_or_jump)
-"smap <silent><C-k>                <Plug>(neosnippet_expand_or_jump)
-"inoremap <silent><C-U>            <ESC>:<C-U>Unite snippet<CR>
-"nnoremap <silent><Space>e         :<C-U>NeoSnippetEdit -split<CR>
-"xmap <silent>o                   <Plug>(neosnippet_register_oneshot_snippet)
-"autocmd User Rails.view*                 NeoSnippetSource ~/.vim/snippet/ruby.rails.view.snip
-"autocmd User Rails.controller*           NeoSnippetSource ~/.vim/snippet/ruby.rails.controller.snip
-"autocmd User Rails/db/migrate/*          NeoSnippetSource ~/.vim/snippet/ruby.rails.migrate.snip
-"autocmd User Rails/config/routes.rb      NeoSnippetSource ~/.vim/snippet/ruby.rails.route.snip
-" "}}}
+
 " uniteを利用したyank履歴
 let g:unite_source_history_yank_enable =1  "history/yankの有効化
 nnoremap <silent> ,uy :<C-u>Unite history/yank<CR>
 
 nnoremap <silent><C-e> :NERDTreeToggle<CR>
+
+" 閉じタグ生成
+let g:closetag_filenames = '*.html,*.vue'
+
